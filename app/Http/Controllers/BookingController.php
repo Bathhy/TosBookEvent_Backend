@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Event;
+use App\Models\Payment;
+use App\Models\Refund;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -87,8 +89,9 @@ class BookingController extends Controller
             });
 
             return response()->json([
-                "message" => "success",
                 "status" => 200,
+                "message" => "success",
+
                 "data" => BookingResource::collection($bookings),
 //                "data" => $bookings,
             ]);
@@ -97,9 +100,6 @@ class BookingController extends Controller
             return $this->handleError($e);
         }
     }
-
-
-
 
 
     //add middleware to level controller
@@ -194,8 +194,8 @@ class BookingController extends Controller
                 $event->decrement('available_ticket', $request->quantity);
 
                 return response()->json([
-                    'message' => 'Booking created successfully',
                     'status' => 201,
+                    'message' => 'Booking created successfully',
                     'data' => $this->formatBooking($booking),
                 ]);
             });
@@ -220,6 +220,12 @@ class BookingController extends Controller
     public function update(string $id, Request $request): \Illuminate\Http\JsonResponse
     {
         try {
+            if (!auth()->check()) {
+                return response()->json([
+                    'message' => 'Unauthorized',
+                    'status' => 401,
+                ]);
+            }
             $validated = $request->validate([
                 'status_id' => 'required|integer|in:2,3' // Only allow 2 (Complete) or 3 (Cancel)
             ]);
@@ -246,6 +252,19 @@ class BookingController extends Controller
                 // Handle ticket availability
                 if ($newStatus === 3 && $booking->event) { // Cancelled
                     $booking->event->increment('available_ticket', $booking->quantity);
+                    $payment = Payment::query()->where('booking_id', $booking->booking_id)->first();
+                    if (!$payment) {
+                        throw new \Exception("Payment not found for refund");
+                    }
+                    Refund::query()->create([
+                        'booking_id' => $booking->booking_id,
+                        'payment_id' => $payment->payment_id,
+                        'refund_amount' => $payment->amount,
+                        'user_id' => auth()->id(),
+                        'refund_date' => now(),
+                        'reason' => 'Cancelled by user',
+                        'status_id' => 1,
+                    ]);
                 }
 
                 return response()->json([
