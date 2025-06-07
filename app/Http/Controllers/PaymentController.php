@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Payment;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -11,9 +12,31 @@ class PaymentController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse
     {
-
+        try {
+            if (!auth()->check()) {
+                return response()->json([
+                    'message' => 'Unauthorized',
+                    'status' => 401,
+                ]);
+            }
+            $getAllPaymentProcess = Payment::query()->orderBy('payment_id')->get();
+            return response()->json([
+                'status' => 200,
+                'message' => 'Success',
+                'data' => $getAllPaymentProcess,
+            ],
+            );
+        } catch (\Exception $e) {
+            return response()->json(
+                [
+                    'error' => $e->getMessage(),
+                    'status' => 500,
+                ],
+                500
+            );
+        }
     }
 
     public function store(Request $request): \Illuminate\Http\JsonResponse
