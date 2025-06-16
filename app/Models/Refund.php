@@ -17,12 +17,12 @@ class Refund extends Model
         'refund_status',
         'refund_amount',
         'reason',
-        'status_id'
+        'refund_status_id',
     ];
 
     public function refundStatus()
     {
-        return $this->belongsTo(RefundStatus::class, 'status_id', 'id');
+        return $this->belongsTo(RefundStatus::class, 'refund_status_id', 'id');
     }
 
     public function bookings()

@@ -13,12 +13,20 @@ use Illuminate\Support\Facades\Log;
 class ReportController extends Controller
 {
     // List all reports
-    public function index(): \Illuminate\Http\JsonResponse
+    public function index(Request $request): \Illuminate\Http\JsonResponse
     {
         try {
             // Get first and last day of current month
-            $dateFrom = now()->startOfMonth()->toDateString();
-            $dateTo = now()->endOfMonth()->toDateString();
+            $dateFrom = $request->query('date_from', now()->startOfMonth()->toDateString());
+            $dateTo = $request->query('date_to', now()->endOfMonth()->toDateString());
+
+            // Validate date format (optional but recommended)
+            if (!strtotime($dateFrom) || !strtotime($dateTo)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Invalid date format. Use YYYY-MM-DD.',
+                ], 422);
+            }
 
             // Try to find existing report for current month
             $report = Report::query()
@@ -35,7 +43,40 @@ class ReportController extends Controller
 
             return response()->json([
                 'status' => 200,
-                'message' => 'Current month report retrieved successfully',
+                'message' => 'successfully',
+                'data' =>[
+                    'report' => $report,
+                    'total_reports' => Report::count(),
+                ],
+            ]);
+
+        } catch (\Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+    }
+    public function ListIndex(Request $request): \Illuminate\Http\JsonResponse
+    {
+        try {
+            // Get first and last day of current month
+            $dateFrom = $request->query('date_from', now()->startOfMonth()->toDateString());
+            $dateTo = $request->query('date_to', now()->endOfMonth()->toDateString());
+
+            // Try to find existing report for current month
+            $report = Report::query()
+                ->where('date_from', $dateFrom)
+                ->where('date_to', $dateTo)
+                ->get();
+
+            if (!$report) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No report found for current month. Please generate a report first.',
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Successfully',
                 'data' => $report,
             ]);
 
@@ -43,7 +84,6 @@ class ReportController extends Controller
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
-
     // Show a specific report
     public function show($id)
     {

@@ -36,6 +36,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::resource('/booking', BookingController::class);
     Route::resource('/ticket', TicketController::class);
     Route::resource('/payment', PaymentController::class);
+    Route::get('refund', [RefundController::class, 'indexByUser']);
 });
 
 Route::get('/user', [ProfileController::class, 'index'])->middleware('auth:sanctum');
@@ -54,6 +55,7 @@ Route::prefix('admin')->middleware('auth:sanctum')->group(function () {
     Route::resource('/refund', RefundController::class);
     Route::post('/reports', [ReportController::class, 'generate']);
     Route::get('/reports', [ReportController::class, 'index']);
+    Route::get('/reports_list', [ReportController::class, 'ListIndex']);
 });
 
 
