@@ -24,10 +24,10 @@ class Customer extends Model implements Authenticatable
     protected $fillable = [
         'username',
         'password',
-        'firstname',
-        'lastname',
+        'first_name',
+        'last_name',
         'email',
-        'phonenumber',
+        'phone_number',
         'profile_image',
         'role_id'
     ];
