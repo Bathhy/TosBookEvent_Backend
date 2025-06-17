@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payment extends Model
 {
-    protected $table = 'event_booking.payment';
+    protected $table = 'payment';
     protected $primaryKey = 'payment_id';
     public $timestamps = false;
 

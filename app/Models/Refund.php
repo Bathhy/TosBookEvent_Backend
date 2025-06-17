@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Refund extends Model
 {
-    protected $table = 'event_booking.refund';
+    protected $table = 'refund';
     protected $primaryKey = 'refund_id';
     public $timestamps = false;
     protected $fillable = [

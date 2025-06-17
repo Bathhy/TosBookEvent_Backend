@@ -15,7 +15,7 @@ class Customer extends Model implements Authenticatable
 //    protected $connection = 'pgsql';
     //table
     protected $connection = 'pgsql';
-    protected $table = 'event_booking.customer';
+    protected $table = 'customer';
     protected $primaryKey = 'customer_id';
     public $timestamps = false;
     protected $hidden = [
