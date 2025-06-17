@@ -40,8 +40,8 @@ class BookingController extends Controller
                     }
                 });
             return response()->json([
-                "message" => "success",
                 "status" => 200,
+                "message" => "success",
                 "data" => BookingResource::collection($getAllBookingQuery),
             ]);
         } catch (\Exception $e) {
@@ -263,7 +263,7 @@ class BookingController extends Controller
                         'user_id' => auth()->id(),
                         'refund_date' => now(),
                         'reason' => 'Cancelled by user',
-                        'status_id' => 1,
+                        'refund_status_id' => 1,
                     ]);
                 }
 
@@ -316,7 +316,7 @@ class BookingController extends Controller
                 'price' => $booking->event->price,
                 'available_tickets' => $booking->event->available_tickets,
                 'event_status' => $booking->event->eventStatus,
-                'image_url' => $booking->event->image ? url('storage/' . $booking->event->image) : null,
+                'thumbnail' => $booking->event->image ? url('storage/' . $booking->event->image) : null,
             ] : null,
             'booking_status' => $booking->bookingStatus,
         ];

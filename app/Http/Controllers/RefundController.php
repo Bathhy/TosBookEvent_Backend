@@ -22,12 +22,50 @@ class RefundController
             }
             $getAllRefunds = Refund::with([
                 'user',
-                'status',
-            ])->orderBy('refund_id')->get()->makeHidden(['user_id', 'status_id']);
+                'refundStatus',
+            ])->
+            orderBy('refund_id')->get()->makeHidden(['user_id', ]);
             return response()->json([
                 'status' => 200,
                 'message' => 'Success',
                 'data' => $getAllRefunds,
+            ],
+            );
+        } catch (\Exception $exception) {
+            return response()->json(
+                [
+                    'error' => $exception->getMessage(),
+                    'status' => 500,
+                ],
+                500
+            );
+        }
+    }
+
+    public function indexByUser(Request $request): JsonResponse
+    {
+        try {
+            $statusIdQuery = $request->query('refund_status_id');
+            if (!auth()->check()) {
+                return response()->json([
+                    'message' => 'Unauthorized',
+                    'status' => 401,
+                ]);
+            }
+            $customerId = auth()->id();
+            $getAllRefunds = Refund::with([
+                'user',
+                'status',
+                'bookings.event'
+            ])->where('user_id', $customerId)->orderBy('refund_id');
+            if(!empty($statusIdQuery)){
+                $getAllRefunds = $getAllRefunds->where('refund_status_id', $statusIdQuery);
+            }
+            $ListRefunds= $getAllRefunds->get()->makeHidden(['user_id', 'status']);
+            return response()->json([
+                'status' => 200,
+                'message' => 'Success',
+                'data' => $ListRefunds,
             ],
             );
         } catch (\Exception $exception) {
@@ -76,7 +114,7 @@ class RefundController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id): \Illuminate\Http\JsonResponse
+    public function update(Request $request, string $id): JsonResponse
     {
         try {
             if (!auth()->check()) {
@@ -85,11 +123,13 @@ class RefundController
                     'status' => 401,
                 ]);
             }
+
             $validate = $request->validate([
-                'status_id' => 'required|integer|in:2,3',
+                'refund_status_id' => 'required|integer|in:2,3',
             ]);
-//            $findRefundId = Refund::query()->where('refund_id', $id)->first();
+
             $findRefundId = Refund::query()->find($id);
+
             if (!$findRefundId) {
                 return response()->json([
                     'message' => 'Refund not found',
@@ -97,30 +137,82 @@ class RefundController
                     'data' => null,
                 ], 404);
             }
-            if ($findRefundId->status_id == $validate['status_id']) {
+
+            // Fixed: Use consistent column name (refund_status_id)
+            if ($findRefundId->refund_status_id == $validate['refund_status_id']) {
                 return response()->json([
                     'message' => 'Refund already has this status',
                     'status' => 400,
                 ], 400);
             }
-            $findRefundId->update(['status_id' => $validate['status_id']]);
-            if ($findRefundId->status_id == 2) {
+
+            $findRefundId->update(['refund_status_id' => $validate['refund_status_id']]);
+
+            // Fixed: Use consistent column name (refund_status_id)
+            if ($findRefundId->refund_status_id == 2) {
                 if ($findRefundId->payment) {
                     $findRefundId->payment->update(['payment_status_id' => '2']);
                 }
-
             }
-//            $findRefundId->refresh();
-            $findRefundId->load(['user', 'status'])->makeHidden(['user_id', 'status_id']);
+
+            $findRefundId->load(['user', 'refundStatus'])
+                ->makeHidden(['user_id', ]);
+
             return response()->json([
                 'status' => 200,
-                'message' => $validate['status_id'] == 2 ? 'Refund approved successfully' : 'Refund rejected successfully',
+                'message' => $validate['refund_status_id'] == 2 ? 'Refund approved successfully' : 'Refund rejected successfully',
                 'data' => $findRefundId
             ]);
         } catch (\Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
+
+    /*   public function update(Request $request, string $id): \Illuminate\Http\JsonResponse
+       {
+           try {
+               if (!auth()->check()) {
+                   return response()->json([
+                       'message' => 'Unauthorized',
+                       'status' => 401,
+                   ]);
+               }
+               $validate = $request->validate([
+                   'refund_status_id' => 'required|integer|in:2,3',
+               ]);
+   //            $findRefundId = Refund::query()->where('refund_id', $id)->first();
+               $findRefundId = Refund::query()->find($id);
+               if (!$findRefundId) {
+                   return response()->json([
+                       'message' => 'Refund not found',
+                       'status' => 404,
+                       'data' => null,
+                   ], 404);
+               }
+               if ($findRefundId->status_id == $validate['refund_status_id']) {
+                   return response()->json([
+                       'message' => 'Refund already has this status',
+                       'status' => 400,
+                   ], 400);
+               }
+               $findRefundId->update(['refund_status_id' => $validate['refund_status_id']]);
+               if ($findRefundId->status_id == 2) {
+                   if ($findRefundId->payment) {
+                       $findRefundId->payment->update(['payment_status_id' => '2']);
+                   }
+
+               }
+   //            $findRefundId->refresh();
+               $findRefundId->load(['user', 'refundStatus'])->makeHidden(['user_id', 'refund_status_id']);
+               return response()->json([
+                   'status' => 200,
+                   'message' => $validate['refund_status_id'] == 2 ? 'Refund approved successfully' : 'Refund rejected successfully',
+                   'data' => $findRefundId
+               ]);
+           } catch (\Exception $exception) {
+               return response()->json(['error' => $exception->getMessage()], 500);
+           }
+       }*/
 
     /**
      * Remove the specified resource from storage.
