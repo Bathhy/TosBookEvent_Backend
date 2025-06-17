@@ -32,9 +32,9 @@ class AuthController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'first_name' => $request->firstname,
-            'last_name' => $request->lastname,
-            'phone_number' => $request->phonenumber,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'phone_number' => $request->phone_number,
             'profile_image' => $request->profile_image,
             'role_id' => $request->role_id, // Set role_id based on input
         ]);
