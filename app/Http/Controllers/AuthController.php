@@ -18,9 +18,9 @@ class AuthController extends Controller
             'username' => 'required|string|unique:customer,username',
             'email' => 'required|email|unique:customer,email',
             'password' => 'required|min:8|confirmed',
-            'firstname' => 'required|string',
-            'lastname' => 'required|string',
-            'phonenumber' => 'required|string',
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
+            'phone_number' => 'required|string',
             'profile_image' => 'nullable|string',
             'role_id' => 'required|integer',
         ]);
@@ -32,9 +32,9 @@ class AuthController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'firstname' => $request->firstname,
-            'lastname' => $request->lastname,
-            'phonenumber' => $request->phonenumber,
+            'first_name' => $request->firstname,
+            'last_name' => $request->lastname,
+            'phone_number' => $request->phonenumber,
             'profile_image' => $request->profile_image,
             'role_id' => $request->role_id, // Set role_id based on input
         ]);
