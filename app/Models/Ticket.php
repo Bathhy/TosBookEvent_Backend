@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Ticket extends Model
 {
     protected $primaryKey = 'ticket_id';
-    protected $table = 'event_booking.ticket';
+    protected $table = 'ticket';
     public $timestamps = false;
     protected $fillable = [
         'user_id',

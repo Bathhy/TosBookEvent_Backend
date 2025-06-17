@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Ticket_Status extends Model
 {
     protected $primaryKey = 'id';
-    protected $table = 'event_booking_ticket_status';
+    protected $table = 'ticket_status';
 
     public $timestamps = false;
 

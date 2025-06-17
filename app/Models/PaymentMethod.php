@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class PaymentMethod extends Model
 {
     use HasFactory;
-    protected $table = 'event_booking.payment_method';
+    protected $table = 'payment_method';
     protected $primaryKey = 'payment_method_id';
     public $timestamps = false;
     protected $fillable = [
