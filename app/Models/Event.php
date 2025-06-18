@@ -47,7 +47,7 @@ class Event extends Model
     {
         return $this->hasMany(Booking::class);
     }
-//    protected $appends = ['image_url'];
+    protected $appends = ['image_url'];
 
     protected $casts = [
         'location' => 'array',
