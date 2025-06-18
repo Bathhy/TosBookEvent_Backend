@@ -44,7 +44,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Login successful',
-            'status'=> 200,
+            'status' => 201,
             'data' => [
                 'customer' => $customer,
                 'token' => $token
@@ -69,12 +69,12 @@ class AuthController extends Controller
             $token = $user->createToken('auth_token')->plainTextToken;
             return response()->json([
                 'message' => 'Login successful',
-                'status'=> 200,
+                'status' => 201,
                 'data' => [
                     'customer' => $user,
                     'token' => $token
                 ],
-
+                201
             ]);
         } catch (\Exception $exception) {
             Log::error('Registration Error: ' . $exception->getMessage());
@@ -93,16 +93,16 @@ class AuthController extends Controller
             $request->user()->tokens()->delete();
             return response()->json([
                 'message' => 'Logout successful',
-                'status'=> 200,
+                'status' => 200,
                 'data' => null,
 
             ]);
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $request->user()->tokens()->delete();
             return response()->json([
                 'message' => 'Failed',
-                'status'=> 200,
-                'data'=> null
+                'status' => 200,
+                'data' => null
 
             ]);
         }
