@@ -34,12 +34,12 @@ class ReportController extends Controller
                 ->where('date_to', $dateTo)
                 ->first();
 
-            if (!$report) {
+           /* if (!$report) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'No report found for current month. Please generate a report first.',
                 ], 404);
-            }
+            }*/
 
             return response()->json([
                 'status' => 200,
