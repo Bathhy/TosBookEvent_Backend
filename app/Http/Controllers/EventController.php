@@ -49,12 +49,12 @@ class EventController extends Controller
             $events = $query->get();
 
             // ✅ Convert thumbnails to full URLs
-            $events->transform(function ($event) {
+         /*   $events->transform(function ($event) {
                 $event->thumbnail = $event->thumbnail
                     ? asset('storage/' . $event->thumbnail)
                     : null;
                 return $event;
-            });
+            });*/
 
             return response()->json([
                 'status' => 200,
@@ -145,32 +145,32 @@ class EventController extends Controller
         }
     }
 
-  /*  public function getEventById(int $eventId): JsonResponse
-    {
-        try {
-            // Find the event by ID
-//            $getEventByIdQuery = Event::query()->where('event_id', $eventId)->first()
-            $getEventByIdQuery = Event::query()->get()->find($eventId);
+    /*  public function getEventById(int $eventId): JsonResponse
+      {
+          try {
+              // Find the event by ID
+  //            $getEventByIdQuery = Event::query()->where('event_id', $eventId)->first()
+              $getEventByIdQuery = Event::query()->get()->find($eventId);
 
 
-            // If the event doesn't exist, return a 404 error
-            if (!$getEventByIdQuery) {
-                return response()->json([
-                    'message' => 'Event not found',
-                    'status' => 404,
-                ], 404);
-            }
+              // If the event doesn't exist, return a 404 error
+              if (!$getEventByIdQuery) {
+                  return response()->json([
+                      'message' => 'Event not found',
+                      'status' => 404,
+                  ], 404);
+              }
 
-            // Return the event object directly in the response
-            return response()->json([
-                'message' => 'success',
-                'status' => 200,
-                'data' => $getEventByIdQuery,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }*/
+              // Return the event object directly in the response
+              return response()->json([
+                  'message' => 'success',
+                  'status' => 200,
+                  'data' => $getEventByIdQuery,
+              ]);
+          } catch (\Exception $e) {
+              return response()->json(['error' => $e->getMessage()], 500);
+          }
+      }*/
 
 
     public function createEventByAdmin(Request $request): JsonResponse
@@ -189,25 +189,28 @@ class EventController extends Controller
                 'thumbnail' => 'sometimes|image|mimes:jpeg,png,jpg|max:2048',
                 'total_ticket' => 'required|integer',
                 'available_ticket' => 'required|integer',
+                'price' => 'required|integer',
                 'event_status_id' => 'required|integer',
                 'category_id' => 'required|integer',
+                'city' => 'required|string',
+
             ]);
             if ($validateBodyReq->fails()) {
                 return response()->json(['error' => $validateBodyReq->errors()], 401);
             }
-          /*  $thumbnailPath = null;
-            if ($request->hasFile('thumbnail')) {
-                $file = $request->file('thumbnail');
-                $filename = time() . '_' . $file->getClientOriginalName();
-                $path = $file->storeAs('thumbnails', $filename, 'public');
-                $thumbnailPath = asset('storage/' . $path); // Generates full public URL
-            }*/
+            /*  $thumbnailPath = null;
+              if ($request->hasFile('thumbnail')) {
+                  $file = $request->file('thumbnail');
+                  $filename = time() . '_' . $file->getClientOriginalName();
+                  $path = $file->storeAs('thumbnails', $filename, 'public');
+                  $thumbnailPath = asset('storage/' . $path); // Generates full public URL
+              }*/
 
             $thumbnailPath = null;
             if ($request->hasFile('thumbnail')) {
                 $file = $request->file('thumbnail');
                 $filename = time() . '_' . $file->getClientOriginalName();
-                $path = $file->storeAs('thumbnails', $filename, 'public');
+                    $path = $file->storeAs('thumbnails', $filename, 'public');
 
                 // ✅ Save only relative path like: 'thumbnails/xyz.jpg'
                 $thumbnailPath = $path;
@@ -221,6 +224,12 @@ class EventController extends Controller
                 'available_ticket' => $request->available_ticket,
                 'event_status_id' => $request->event_status_id,
                 'category_id' => $request->category_id,
+                'price' => $request->price,
+                'location' => [
+                    'city' => $request->city ?? 'Default City',
+                    'latitude' => 12.345678,     // your fixed latitude
+                    'longitude' => 98.765432     // your fixed longitude
+                ],
             ]);
             return response()->json([
                 'message' => 'Event created successfully',
