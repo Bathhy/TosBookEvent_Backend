@@ -36,7 +36,8 @@ class Event extends Model
     public function getImageUrlAttribute()
     {
         if ($this->thumbnail) {
-            return url('storage/' . $this->thumbnail);
+//            return url('storage/' . $this->thumbnail);
+            return secure_url('storage/' . $this->thumbnail);
             // or if using asset()
             // return asset('storage/' . $this->image);
         }
