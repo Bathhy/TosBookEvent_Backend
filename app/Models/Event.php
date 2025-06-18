@@ -52,5 +52,6 @@ class Event extends Model
 
     protected $casts = [
         'location' => 'array',
+        'price' => 'double',
     ];
 }
