@@ -13,13 +13,23 @@ class PaymentMethodController
     public function index(): \Illuminate\Http\JsonResponse
     {
         try {
-            $getQuery = PaymentMethod::query()->orderBy('payment_method_id')->get();
+            $getQuery = PaymentMethod::query()
+                ->orderBy('payment_method_id')
+                ->get()
+                ->makeHidden(['description', 'is_active', 'created_at', 'updated_at'])
+                ->map(function ($item) {
+                    return [
+                        'id' => $item->payment_method_id,
+                        'name' => $item->method_name,
+                        'image_url' => $item->image_url,
+                    ];
+                });
             return response()->json([
                 'status' => 200,
                 'message' => 'success',
                 'data' => $getQuery,
             ]);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 500,
                 'message' => $e->getMessage(),
