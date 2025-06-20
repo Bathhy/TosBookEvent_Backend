@@ -18,7 +18,9 @@ class Booking extends Model
         'booking_date',
         'booking_status_id',
     ];
-
+    protected $casts = [
+        'total_amount' => 'double',
+    ];
     public function event()
     {
         return $this->belongsTo(Event::class, 'event_id')->with('eventStatus');
