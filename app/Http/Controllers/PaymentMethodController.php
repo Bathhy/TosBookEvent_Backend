@@ -19,7 +19,7 @@ class PaymentMethodController
                 ->makeHidden(['description', 'is_active', 'created_at', 'updated_at'])
                 ->map(function ($item) {
                     return [
-                        'id' => $item->payment_method_id,
+                        'payment_method_id' => $item->payment_method_id,
                         'name' => $item->method_name,
                         'image_url' => $item->image_url,
                     ];
