@@ -187,7 +187,7 @@ class BookingController extends Controller
                     'quantity' => $request->quantity,
                     'booking_status_id' => $request->booking_status_id,
                     'customer_id' => auth()->id(),
-                    'booking_date ' => now(),
+                    'booking_date' => now(),
                     'total_amount' => $event->price * $request->quantity,
                 ]);
 
