@@ -19,7 +19,9 @@ class Refund extends Model
         'reason',
         'refund_status_id',
     ];
-
+    protected $casts = [
+        'refund_amount'=> 'double',
+    ];
     public function refundStatus()
     {
         return $this->belongsTo(RefundStatus::class, 'refund_status_id', 'id');
