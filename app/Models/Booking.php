@@ -15,6 +15,7 @@ class Booking extends Model
         'customer_id',
         'quantity',
         'total_amount',
+        'booking_date',
         'booking_status_id',
     ];
 
