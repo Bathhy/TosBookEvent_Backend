@@ -13,10 +13,18 @@ class  UserManagementController extends Controller
         try {
             $userNameQuery = $request->query('username');
             $coreQuery = Customer::query();
-            if(!empty($userNameQuery)) {
-                $coreQuery->whereRaw('username ILIKE ?', [$userNameQuery]);
+            $currentUserId = auth()->id(); // or auth()->user()->id
+            if ($currentUserId) {
+                $coreQuery->where('customer_id', '!=', $currentUserId);
             }
+
+            // Apply username filter if provided
+            if (!empty($userNameQuery)) {
+                $coreQuery->whereRaw('username ILIKE ?', ["%{$userNameQuery}%"]);
+            }
+
             $getAllCustomerQuery = $coreQuery->get();
+
             return response()->json(
                 [
                     "status" => 200,
